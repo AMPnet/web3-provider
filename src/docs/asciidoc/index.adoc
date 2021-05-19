@@ -1,0 +1,26 @@
+= AMPnet Web3 Provider  API Documentation
+Version {version}, {date}
+:doctype: book
+:toc: left
+:sectnums:
+:toclevels: 2
+:source-highlighter: prettify
+:docinfo: shared
+:icons: font
+
+== Introduction
+This document contains generated documentation for `AMPnet web3 provider`.
+
+== Public API
+Collection of public endpoints
+
+=== Provider API
+
+==== Get balance
+`params` has two required fields: `address` to check for balance and `block number`
+which is either an integer or the string `latest`, `earliest` or `pending`.
+
+.Request
+include::{snippets}/ProviderServiceTest/mustBeAbleToGetUserAccountBalance/http-request.adoc[]
+.Response
+include::{snippets}/ProviderServiceTest/mustBeAbleToGetUserAccountBalance/http-response.adoc[]
