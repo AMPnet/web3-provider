@@ -1,6 +1,6 @@
 package com.ampnet.web3provider.service.impl
 
-import com.ampnet.web3provider.config.Provider
+import com.ampnet.web3provider.config.ApplicationProperties
 import com.ampnet.web3provider.exception.InvalidRequestException
 import com.ampnet.web3provider.exception.ResourceNotFoundException
 import com.ampnet.web3provider.service.Web3jService
@@ -15,9 +15,9 @@ import java.math.BigInteger
 import kotlin.jvm.Throws
 
 @Service
-class Web3jServiceImpl(provider: Provider) : Web3jService {
+class Web3jServiceImpl(applicationProperties: ApplicationProperties) : Web3jService {
 
-    private val web3j = Web3j.build(HttpService(provider.blockchainApi))
+    private val web3j = Web3j.build(HttpService(applicationProperties.provider.blockchainApi))
 
     @Throws(InvalidRequestException::class, ResourceNotFoundException::class)
     @Suppress("TooGenericExceptionCaught")
