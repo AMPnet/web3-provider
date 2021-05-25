@@ -27,7 +27,6 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -40,12 +39,14 @@ dependencies {
         exclude(group = "com.squareup.okhttp3")
     }
     implementation("io.github.microutils:kotlin-logging:2.0.5")
-    implementation("com.squareup.okhttp3:okhttp:4.9.1")
     runtimeOnly("javax.jws:jsr181-api:1.0-MR1")
+
+    val okhttpVersion = "4.9.1"
+    implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
+    implementation("com.squareup.okhttp3:logging-interceptor:$okhttpVersion")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
-    testImplementation("org.springframework.security:spring-security-test")
 }
 
 tasks.withType<KotlinCompile> {

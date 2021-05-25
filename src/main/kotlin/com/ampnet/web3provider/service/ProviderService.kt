@@ -18,5 +18,5 @@ interface ProviderService {
             JsonRpcError(exception = ResourceNotFoundException::class, code = -32602)
         ]
     )
-    fun getBalance(address: String, blockParameter: Any): BigInteger
+    fun getBalance(address: String, blockParameter: String): BigInteger
 }

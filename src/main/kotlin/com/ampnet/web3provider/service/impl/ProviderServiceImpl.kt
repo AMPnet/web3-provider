@@ -17,10 +17,9 @@ class ProviderServiceImpl(
 
     companion object : KLogging()
 
-    override fun getBalance(address: String, blockParameter: Any): BigInteger {
+    override fun getBalance(address: String, blockParameter: String): BigInteger {
         logger.info { "Received request to get eth_getBalance for address: $address and block: $blockParameter" }
-        val cacheBalance = providerRedisRepository.getBalance(address, blockParameter)
-        cacheBalance?.let { return it }
+        providerRedisRepository.getBalance(address, blockParameter)?.let { return it }
         val balance = web3jService.getBalance(address, blockParameter)
         providerRedisRepository.updateBalance(address, blockParameter, balance)
         return balance
