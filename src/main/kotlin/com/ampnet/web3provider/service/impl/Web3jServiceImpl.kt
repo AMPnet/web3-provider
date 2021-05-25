@@ -12,11 +12,9 @@ import org.web3j.protocol.core.DefaultBlockParameterNumber
 import org.web3j.protocol.exceptions.ClientConnectionException
 import org.web3j.protocol.http.HttpService
 import java.math.BigInteger
-import kotlin.jvm.Throws
 
 @Service
 class Web3jServiceImpl(applicationProperties: ApplicationProperties) : Web3jService {
-
     private val web3j = Web3j.build(HttpService(applicationProperties.provider.blockchainApi))
 
     @Throws(InvalidRequestException::class, ResourceNotFoundException::class)
@@ -40,7 +38,9 @@ class Web3jServiceImpl(applicationProperties: ApplicationProperties) : Web3jServ
                 is ClientConnectionException, is MessageEncodingException -> {
                     throw ResourceNotFoundException("Invalid method parameter(s).", ex)
                 }
-                else -> throw ResourceNotFoundException("Unexpected exception occurred.", ex)
+                else -> {
+                    throw ResourceNotFoundException("Unexpected exception occurred.", ex)
+                }
             }
         }
     }

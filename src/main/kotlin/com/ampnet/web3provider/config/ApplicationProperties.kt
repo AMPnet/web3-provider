@@ -7,8 +7,13 @@ import org.springframework.context.annotation.Configuration
 @ConfigurationProperties(prefix = "com.ampnet.web3provider")
 class ApplicationProperties {
     val provider = Provider()
+    val jwt: JwtProperties = JwtProperties()
 }
 
 class Provider {
     var blockchainApi = "https://eth-mainnet.alchemyapi.io/v2/hzYkWsp9ig3umpP6-ol3h2F64nof0lQ8"
+}
+
+class JwtProperties {
+    lateinit var publicKey: String
 }
