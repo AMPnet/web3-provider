@@ -12,16 +12,18 @@ class ProviderRedisRepositoryImpl(private val redisTemplate: RedisTemplate<Strin
 
     private val hashOperations: HashOperations<String, String, BigInteger> = redisTemplate.opsForHash()
 
-    override fun getBalance(address: String, blockParameter: Any): BigInteger? {
-        return hashOperations.get(RedisEntity.BALANCE.key, address + blockParameter.toString())
+    override fun getBalance(address: String, blockParameter: String): BigInteger? {
+        return hashOperations.get(RedisEntity.BALANCE.key, getKey(address, blockParameter))
     }
 
-    override fun updateBalance(address: String, blockParameter: Any, balance: BigInteger) {
-        hashOperations.put(RedisEntity.BALANCE.key, address + blockParameter.toString(), balance)
+    override fun updateBalance(address: String, blockParameter: String, balance: BigInteger) {
+        hashOperations.put(RedisEntity.BALANCE.key, getKey(address, blockParameter), balance)
         redisTemplate.expire(RedisEntity.BALANCE.key, Duration.ofSeconds(RedisEntity.BALANCE.ttlInSec))
     }
 
-    override fun deleteBalance(address: String, blockParameter: Any) {
-        hashOperations.delete(RedisEntity.BALANCE.key, address + blockParameter.toString())
+    override fun deleteBalance(address: String, blockParameter: String) {
+        hashOperations.delete(RedisEntity.BALANCE.key, getKey(address, blockParameter))
     }
+
+    private fun getKey(address: String, blockParameter: String) = address + blockParameter
 }

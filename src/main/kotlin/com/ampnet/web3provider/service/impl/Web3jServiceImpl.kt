@@ -33,9 +33,7 @@ class Web3jServiceImpl(applicationProperties: ApplicationProperties) : Web3jServ
                 is ClientConnectionException, is MessageEncodingException -> {
                     throw ResourceNotFoundException("Invalid method parameter(s).", ex)
                 }
-                else -> {
-                    throw ResourceNotFoundException("Unexpected exception occurred.", ex)
-                }
+                else -> { throw ResourceNotFoundException("Unexpected exception occurred.", ex) }
             }
         }
     }

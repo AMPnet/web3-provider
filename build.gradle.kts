@@ -32,7 +32,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("redis.clients:jedis:3.6.0")
-    implementation("com.github.AMPnet:jwt:0.2.0")
 
     implementation("com.github.briandilley.jsonrpc4j:jsonrpc4j:1.6")
     implementation("org.web3j:core:4.8.4") {
