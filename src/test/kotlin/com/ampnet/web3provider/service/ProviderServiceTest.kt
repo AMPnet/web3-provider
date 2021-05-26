@@ -1,6 +1,9 @@
 package com.ampnet.web3provider.service
 
 import com.ampnet.web3provider.TestBase
+import com.ampnet.web3provider.enums.RedisEntity
+import com.ampnet.web3provider.repository.ProviderRedisRepository
+import com.ampnet.web3provider.service.impl.ProviderServiceImpl
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
@@ -11,6 +14,7 @@ import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
@@ -33,12 +37,22 @@ class ProviderServiceTest : TestBase() {
     private val blockParameter = DefaultBlockParameterName.LATEST.toString().toLowerCase()
 
     @Autowired
-    protected lateinit var objectMapper: ObjectMapper
+    private lateinit var objectMapper: ObjectMapper
+
+    @Autowired
+    private lateinit var redisTemplate: RedisTemplate<String, String>
+
+    @Autowired
+    private lateinit var providerRepository: ProviderRedisRepository
 
     private lateinit var mockMvc: MockMvc
 
     @MockBean
     private lateinit var web3jService: Web3jService
+
+    private val providerService: ProviderServiceImpl by lazy {
+        ProviderServiceImpl(web3jService, providerRepository)
+    }
 
     @BeforeEach
     fun init(wac: WebApplicationContext, restDocumentation: RestDocumentationContextProvider) {
@@ -76,6 +90,25 @@ class ProviderServiceTest : TestBase() {
             ).andExpect(status().isOk).andReturn()
             val response: GetBalanceResponse = objectMapper.readValue(result.response.contentAsString)
             assertThat(response.result).isEqualTo(BigInteger.TEN.toString())
+        }
+    }
+
+    @Test
+    fun mustClearCacheAfterTtlExpires() {
+        suppose("Web3j service will return balance") {
+            Mockito.`when`(web3jService.getBalance(address, blockParameter))
+                .thenReturn(BigInteger.TEN)
+        }
+
+        verify("Cache is cleared after 5 seconds") {
+            providerService.getBalance(address, blockParameter)
+            val cache = providerRepository.getBalance(address, blockParameter)
+            val expiryTimeInSec = redisTemplate.getExpire(RedisEntity.BALANCE.key)
+            Thread.sleep(RedisEntity.BALANCE.ttlInSec * 1000)
+            val cacheAfter5sec = providerRepository.getBalance(address, blockParameter)
+            assertThat(cache).isEqualTo(BigInteger.TEN)
+            assertThat(cacheAfter5sec).isNull()
+            assertThat(expiryTimeInSec).isEqualTo(RedisEntity.BALANCE.ttlInSec)
         }
     }
 

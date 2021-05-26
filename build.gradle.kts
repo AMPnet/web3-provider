@@ -20,6 +20,8 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()
+    jcenter()
+    maven(url = "https://jitpack.io")
 }
 
 dependencies {
@@ -28,12 +30,19 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("redis.clients:jedis:3.6.0")
 
     implementation("com.github.briandilley.jsonrpc4j:jsonrpc4j:1.6")
-    implementation("org.web3j:core:4.8.4")
+    implementation("org.web3j:core:4.8.4") {
+        exclude(group = "com.squareup.okhttp3")
+    }
     implementation("io.github.microutils:kotlin-logging:2.0.5")
-    implementation("com.squareup.okhttp3:okhttp:4.9.1")
     runtimeOnly("javax.jws:jsr181-api:1.0-MR1")
+
+    val okhttpVersion = "4.9.1"
+    implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
+    implementation("com.squareup.okhttp3:logging-interceptor:$okhttpVersion")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")

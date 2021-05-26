@@ -12,26 +12,19 @@ import org.web3j.protocol.core.DefaultBlockParameterNumber
 import org.web3j.protocol.exceptions.ClientConnectionException
 import org.web3j.protocol.http.HttpService
 import java.math.BigInteger
-import kotlin.jvm.Throws
 
 @Service
 class Web3jServiceImpl(applicationProperties: ApplicationProperties) : Web3jService {
-
     private val web3j = Web3j.build(HttpService(applicationProperties.provider.blockchainApi))
 
     @Throws(InvalidRequestException::class, ResourceNotFoundException::class)
     @Suppress("TooGenericExceptionCaught")
-    override fun getBalance(address: String, blockParameter: Any): BigInteger {
-        val defaultBlockParameter = if (blockParameter is String) {
-            try {
-                DefaultBlockParameterName.fromString(blockParameter.toString())
-            } catch (ex: IllegalArgumentException) {
-                throw InvalidRequestException("Default block parameter name: $blockParameter is not defined.", ex)
-            }
-        } else {
-            blockParameter.toString().toBigIntegerOrNull()?.let {
-                DefaultBlockParameterNumber(it)
-            } ?: throw InvalidRequestException("Block parameter: $blockParameter is not a valid number.")
+    override fun getBalance(address: String, blockParameter: String): BigInteger {
+        val defaultBlockParameter = try {
+            blockParameter.toBigIntegerOrNull(16)?.let { DefaultBlockParameterNumber(it) }
+                ?: DefaultBlockParameterName.fromString(blockParameter)
+        } catch (ex: IllegalArgumentException) {
+            throw InvalidRequestException("$blockParameter is not a valid block parameter.", ex)
         }
         return try {
             web3j.ethGetBalance(address, defaultBlockParameter).send().balance

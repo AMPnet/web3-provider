@@ -27,7 +27,7 @@ class Web3jServiceTest : TestBase() {
     @Test
     fun mustThrowExceptionForInvalidMethodParameters() {
         verify("Must throw exception for invalid block number") {
-            assertThrows<ResourceNotFoundException> { web3jService.getBalance(address, -5) }
+            assertThrows<ResourceNotFoundException> { web3jService.getBalance(address, "-5") }
         }
     }
 }
