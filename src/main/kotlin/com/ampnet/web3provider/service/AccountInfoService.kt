@@ -6,10 +6,9 @@ import com.googlecode.jsonrpc4j.JsonRpcError
 import com.googlecode.jsonrpc4j.JsonRpcErrors
 import com.googlecode.jsonrpc4j.JsonRpcMethod
 import com.googlecode.jsonrpc4j.JsonRpcService
-import java.math.BigInteger
 
-@JsonRpcService("/provider")
-interface ProviderService {
+@JsonRpcService("/account-info")
+interface AccountInfoService {
 
     @JsonRpcMethod(value = "eth_getBalance")
     @JsonRpcErrors(
@@ -18,5 +17,11 @@ interface ProviderService {
             JsonRpcError(exception = ResourceNotFoundException::class, code = -32602)
         ]
     )
-    fun getBalance(address: String, blockParameter: String): BigInteger
+    fun getBalance(address: String, blockParameter: String): String
+
+    @JsonRpcMethod(value = "eth_getCode")
+    fun getCode(address: String, blockParameter: String): String
+
+    @JsonRpcMethod(value = "eth_getStorageAt")
+    fun getStorageAt(address: String, position: String, blockParameter: String): String
 }

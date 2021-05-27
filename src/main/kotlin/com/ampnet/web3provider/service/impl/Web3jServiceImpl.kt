@@ -11,23 +11,27 @@ import org.web3j.protocol.core.DefaultBlockParameterName
 import org.web3j.protocol.core.DefaultBlockParameterNumber
 import org.web3j.protocol.exceptions.ClientConnectionException
 import org.web3j.protocol.http.HttpService
-import java.math.BigInteger
+import org.web3j.utils.Numeric
 
 @Service
 class Web3jServiceImpl(applicationProperties: ApplicationProperties) : Web3jService {
+
     private val web3j = Web3j.build(HttpService(applicationProperties.provider.blockchainApi))
 
     @Throws(InvalidRequestException::class, ResourceNotFoundException::class)
     @Suppress("TooGenericExceptionCaught")
-    override fun getBalance(address: String, blockParameter: String): BigInteger {
+    override fun getBalance(address: String, blockParameter: String): String {
         val defaultBlockParameter = try {
-            blockParameter.toBigIntegerOrNull(16)?.let { DefaultBlockParameterNumber(it) }
-                ?: DefaultBlockParameterName.fromString(blockParameter)
+            DefaultBlockParameterName.fromString(blockParameter)
         } catch (ex: IllegalArgumentException) {
-            throw InvalidRequestException("$blockParameter is not a valid block parameter.", ex)
+            try {
+                DefaultBlockParameterNumber(Numeric.decodeQuantity(blockParameter))
+            } catch (ex: MessageEncodingException) {
+                throw InvalidRequestException("$blockParameter is not a valid block parameter.", ex)
+            }
         }
         return try {
-            web3j.ethGetBalance(address, defaultBlockParameter).send().balance
+            Numeric.encodeQuantity(web3j.ethGetBalance(address, defaultBlockParameter).send().balance)
         } catch (ex: Exception) {
             when (ex) {
                 is ClientConnectionException, is MessageEncodingException -> {
