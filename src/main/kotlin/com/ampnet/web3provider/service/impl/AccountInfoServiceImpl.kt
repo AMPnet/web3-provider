@@ -19,17 +19,31 @@ class AccountInfoServiceImpl(
 
     override fun getBalance(address: String, blockParameter: String): String {
         logger.info { "Received request to get eth_getBalance for address: $address and block: $blockParameter" }
-        redisRepository.getCache(RedisEntity.BALANCE.key, address + blockParameter)?.let { return it }
+        val hashKey = address + blockParameter
+        redisRepository.getCache(RedisEntity.BALANCE.key, hashKey)?.let { return it }
         val balance = web3jService.getBalance(address, blockParameter)
-        redisRepository.updateCache(RedisEntity.BALANCE, address + blockParameter, balance)
+        redisRepository.updateCache(RedisEntity.BALANCE, hashKey, balance)
         return balance
     }
 
     override fun getCode(address: String, blockParameter: String): String {
-        TODO("Not yet implemented")
+        logger.info { "Received request to get eth_getCode for address: $address and block: $blockParameter" }
+        val hashKey = address + blockParameter
+        redisRepository.getCache(RedisEntity.CODE.key, hashKey)?.let { return it }
+        val code = web3jService.getCode(address, blockParameter)
+        redisRepository.updateCache(RedisEntity.CODE, hashKey, code)
+        return code
     }
 
     override fun getStorageAt(address: String, position: String, blockParameter: String): String {
-        TODO("Not yet implemented")
+        logger.info {
+            "Received request to get eth_getBCode for address: $address, position: $position and block: $blockParameter"
+        }
+        val hashKey = address + position + blockParameter
+        redisRepository.getCache(RedisEntity.POSITION.key, hashKey)
+            ?.let { return it }
+        val storage = web3jService.getStorageAt(address, position, blockParameter)
+        redisRepository.updateCache(RedisEntity.POSITION, hashKey, storage)
+        return storage
     }
 }

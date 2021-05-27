@@ -14,13 +14,31 @@ This document contains generated documentation for `AMPnet web3 provider`.
 == Public API
 Collection of public endpoints
 
-=== Provider API
+=== Account Info API
 
 ==== Get balance
 `params` has two required fields: `address` to check for balance and `block number`
 which is either an integer or the string `latest`, `earliest` or `pending`.
 
 .Request
-include::{snippets}/ProviderServiceTest/mustBeAbleToGetUserAccountBalance/http-request.adoc[]
+include::{snippets}/AccountInfoServiceTest/mustBeAbleToGetUserAccountBalance/http-request.adoc[]
 .Response
-include::{snippets}/ProviderServiceTest/mustBeAbleToGetUserAccountBalance/http-response.adoc[]
+include::{snippets}/AccountInfoServiceTest/mustBeAbleToGetUserAccountBalance/http-response.adoc[]
+
+==== Get Code
+`params` has two required fields: `address` to check for balance and `block number`
+which is either an integer or the string `latest`, `earliest` or `pending`.
+
+.Request
+include::{snippets}/AccountInfoServiceTest/mustBeAbleToGetCode/http-request.adoc[]
+.Response
+include::{snippets}/AccountInfoServiceTest/mustBeAbleToGetCode/http-response.adoc[]
+
+==== Get Storage at
+`params` has three required fields: `address` to check for balance, `block number`
+which is either an integer or the string `latest`, `earliest` or `pending` and `position` in the storage.
+
+.Request
+include::{snippets}/AccountInfoServiceTest/mustBeAbleToGetStorageAt/http-request.adoc[]
+.Response
+include::{snippets}/AccountInfoServiceTest/mustBeAbleToGetStorageAt/http-response.adoc[]

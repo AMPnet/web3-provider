@@ -2,6 +2,7 @@ package com.ampnet.web3provider.service
 
 import com.ampnet.web3provider.TestBase
 import com.ampnet.web3provider.config.ApplicationProperties
+import com.ampnet.web3provider.exception.InvalidRequestException
 import com.ampnet.web3provider.exception.ResourceNotFoundException
 import com.ampnet.web3provider.service.impl.Web3jServiceImpl
 import org.junit.jupiter.api.Test
@@ -25,9 +26,16 @@ class Web3jServiceTest : TestBase() {
     }
 
     @Test
-    fun mustThrowExceptionForInvalidMethodParameters() {
+    fun getBalanceMustThrowExceptionForInvalidMethodParameters() {
         verify("Must throw exception for invalid block number") {
             assertThrows<ResourceNotFoundException> { web3jService.getBalance(address, "-5") }
+        }
+    }
+
+    @Test
+    fun getCodeMustThrowExceptionForInvalidMethodParameters() {
+        verify("Must throw exception for invalid block number") {
+            assertThrows<InvalidRequestException> { web3jService.getCode(address, "0x0x") }
         }
     }
 }

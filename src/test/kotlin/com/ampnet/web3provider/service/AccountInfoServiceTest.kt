@@ -36,7 +36,8 @@ class AccountInfoServiceTest : TestBase() {
 
     private val address = "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B"
     private val blockParameter = DefaultBlockParameterName.LATEST.toString().toLowerCase()
-    private val balanceInHex = Numeric.encodeQuantity(BigInteger.TEN)
+    private val hexString = Numeric.encodeQuantity(BigInteger.TEN)
+    private val position = Numeric.encodeQuantity(BigInteger.ZERO)
 
     @Autowired
     private lateinit var objectMapper: ObjectMapper
@@ -74,7 +75,7 @@ class AccountInfoServiceTest : TestBase() {
     fun mustBeAbleToGetUserAccountBalance() {
         suppose("Web3j service will return balance") {
             Mockito.`when`(web3jService.getBalance(address, blockParameter))
-                .thenReturn(balanceInHex)
+                .thenReturn(hexString)
         }
 
         verify("Provider service returns correct balance") {
@@ -90,16 +91,66 @@ class AccountInfoServiceTest : TestBase() {
             val result = mockMvc.perform(
                 post("/account-info").content(json)
             ).andExpect(status().isOk).andReturn()
-            val response: GetBalanceResponse = objectMapper.readValue(result.response.contentAsString)
-            assertThat(response.result).isEqualTo(balanceInHex)
+            val response: JsonRpcResponse = objectMapper.readValue(result.response.contentAsString)
+            assertThat(response.result).isEqualTo(hexString)
         }
     }
 
     @Test
-    fun mustClearCacheAfterTtlExpires() {
+    fun mustBeAbleToGetCode() {
+        suppose("Web3j service will return code") {
+            Mockito.`when`(web3jService.getCode(address, blockParameter))
+                .thenReturn(hexString)
+        }
+
+        verify("Provider service returns correct balance") {
+            val json =
+                """
+                    {
+                    "id":"1",
+                    "jsonrpc":"2.0",
+                    "method": "eth_getCode",
+                    "params":["$address", "$blockParameter"]
+                    }
+                """.trimIndent()
+            val result = mockMvc.perform(
+                post("/account-info").content(json)
+            ).andExpect(status().isOk).andReturn()
+            val response: JsonRpcResponse = objectMapper.readValue(result.response.contentAsString)
+            assertThat(response.result).isEqualTo(hexString)
+        }
+    }
+
+    @Test
+    fun mustBeAbleToGetStorageAt() {
+        suppose("Web3j service will return code") {
+            Mockito.`when`(web3jService.getStorageAt(address, position, blockParameter))
+                .thenReturn(hexString)
+        }
+
+        verify("Provider service returns correct balance") {
+            val json =
+                """
+                    {
+                    "id":"1",
+                    "jsonrpc":"2.0",
+                    "method": "eth_getStorageAt",
+                    "params":["$address", "$position", "$blockParameter"]
+                    }
+                """.trimIndent()
+            val result = mockMvc.perform(
+                post("/account-info").content(json)
+            ).andExpect(status().isOk).andReturn()
+            val response: JsonRpcResponse = objectMapper.readValue(result.response.contentAsString)
+            assertThat(response.result).isEqualTo(hexString)
+        }
+    }
+
+    @Test
+    fun mustClearCacheForGetBalanceAfterTtlExpires() {
         suppose("Web3j service will return balance") {
             Mockito.`when`(web3jService.getBalance(address, blockParameter))
-                .thenReturn(balanceInHex)
+                .thenReturn(hexString)
         }
 
         verify("Cache is cleared after 5 seconds") {
@@ -108,13 +159,13 @@ class AccountInfoServiceTest : TestBase() {
             val expiryTimeInSec = redisTemplate.getExpire(RedisEntity.BALANCE.key)
             Thread.sleep(RedisEntity.BALANCE.ttlInSec * 1000)
             val cacheAfter5sec = redisRepository.getCache(RedisEntity.BALANCE.key, address + blockParameter)
-            assertThat(cache).isEqualTo(balanceInHex)
+            assertThat(cache).isEqualTo(hexString)
             assertThat(cacheAfter5sec).isNull()
             assertThat(expiryTimeInSec).isEqualTo(RedisEntity.BALANCE.ttlInSec)
         }
     }
 
-    data class GetBalanceResponse(
+    data class JsonRpcResponse(
         val id: String,
         val jsonrpc: String,
         val result: String
