@@ -155,10 +155,10 @@ class AccountInfoServiceTest : TestBase() {
 
         verify("Cache is cleared after 5 seconds") {
             providerService.getBalance(address, blockParameter)
-            val cache = redisRepository.getCache(RedisEntity.BALANCE.key, address + blockParameter)
-            val expiryTimeInSec = redisTemplate.getExpire(RedisEntity.BALANCE.key)
+            val cache = redisRepository.getCache(RedisEntity.BALANCE.methodName, address + blockParameter)
+            val expiryTimeInSec = redisTemplate.getExpire(RedisEntity.BALANCE.methodName)
             Thread.sleep(RedisEntity.BALANCE.ttlInSec * 1000)
-            val cacheAfter5sec = redisRepository.getCache(RedisEntity.BALANCE.key, address + blockParameter)
+            val cacheAfter5sec = redisRepository.getCache(RedisEntity.BALANCE.methodName, address + blockParameter)
             assertThat(cache).isEqualTo(hexString)
             assertThat(cacheAfter5sec).isNull()
             assertThat(expiryTimeInSec).isEqualTo(RedisEntity.BALANCE.ttlInSec)

@@ -14,8 +14,8 @@ class RedisRepositoryImpl(private val redisTemplate: RedisTemplate<String, Strin
     override fun getCache(key: String, hashKey: String): String? = hashOperations.get(key, hashKey)
 
     override fun updateCache(redisEntity: RedisEntity, hashKey: String, value: String) {
-        hashOperations.put(redisEntity.key, hashKey, value)
-        redisTemplate.expire(redisEntity.key, Duration.ofSeconds(redisEntity.ttlInSec))
+        hashOperations.put(redisEntity.methodName, hashKey, value)
+        redisTemplate.expire(redisEntity.methodName, Duration.ofSeconds(redisEntity.ttlInSec))
     }
 
     override fun deleteCache(key: String, hashKey: String) {

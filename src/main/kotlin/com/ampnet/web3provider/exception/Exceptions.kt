@@ -5,3 +5,5 @@ class InvalidRequestException(exceptionMessage: String, throwable: Throwable? = 
 
 class ResourceNotFoundException(exceptionMessage: String, throwable: Throwable? = null) :
     Exception(exceptionMessage, throwable)
+
+class JsonRpcException(val errorResponse: ErrorResponse) : Exception()
