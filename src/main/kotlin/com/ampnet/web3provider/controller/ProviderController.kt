@@ -20,13 +20,12 @@ class ProviderController(
 
     companion object : KLogging()
 
-    @PostMapping("/provider", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("/api", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun provider(@RequestBody request: JsonRpcRequest): ResponseEntity<ProviderResponse> {
         logger().debug { "Received request for: ${request.method}" }
         val response = when (request.method) {
             RedisEntity.BALANCE.methodName -> accountInformationService.getBalance(request)
             RedisEntity.CODE.methodName -> accountInformationService.getCode(request)
-            RedisEntity.STORAGE_AT.methodName -> accountInformationService.getStorageAt(request)
             else -> defaultProviderService.getResponse(request)
         }
         return ResponseEntity.ok(response)

@@ -12,33 +12,25 @@ Version {version}, {date}
 This document contains generated documentation for `AMPnet web3 provider`.
 
 == Public API
-Collection of public endpoints
+Collection of public endpoints. If the rpc method is not defined goes to the default provider.
+See the list of all the available methods at: `https://eth.wiki/json-rpc/API`
 
-=== Account Info API
+=== Account Information API
 
 ==== Get balance
 `params` has two required fields: `address` to check for balance and `block number`
 which is either an integer or the string `latest`, `earliest` or `pending`.
 
 .Request
-include::{snippets}/AccountInfoServiceTest/mustBeAbleToGetUserAccountBalance/http-request.adoc[]
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetUserAccountBalance/http-request.adoc[]
 .Response
-include::{snippets}/AccountInfoServiceTest/mustBeAbleToGetUserAccountBalance/http-response.adoc[]
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetUserAccountBalance/http-response.adoc[]
 
 ==== Get Code
 `params` has two required fields: `address` to check for balance and `block number`
 which is either an integer or the string `latest`, `earliest` or `pending`.
 
 .Request
-include::{snippets}/AccountInfoServiceTest/mustBeAbleToGetCode/http-request.adoc[]
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetCode/http-request.adoc[]
 .Response
-include::{snippets}/AccountInfoServiceTest/mustBeAbleToGetCode/http-response.adoc[]
-
-==== Get Storage at
-`params` has three required fields: `address` to check for balance, `block number`
-which is either an integer or the string `latest`, `earliest` or `pending` and `position` in the storage.
-
-.Request
-include::{snippets}/AccountInfoServiceTest/mustBeAbleToGetStorageAt/http-request.adoc[]
-.Response
-include::{snippets}/AccountInfoServiceTest/mustBeAbleToGetStorageAt/http-response.adoc[]
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetCode/http-response.adoc[]

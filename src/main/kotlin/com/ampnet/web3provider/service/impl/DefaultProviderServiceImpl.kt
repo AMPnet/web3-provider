@@ -3,6 +3,7 @@ package com.ampnet.web3provider.service.impl
 import com.ampnet.web3provider.config.ApplicationProperties
 import com.ampnet.web3provider.controller.pojo.JsonRpcRequest
 import com.ampnet.web3provider.controller.pojo.ProviderResponse
+import com.ampnet.web3provider.exception.ErrorCode
 import com.ampnet.web3provider.exception.ErrorResponse
 import com.ampnet.web3provider.exception.JsonRpcException
 import com.ampnet.web3provider.service.DefaultProviderService
@@ -21,17 +22,18 @@ class DefaultProviderServiceImpl(
     private val objectMapper: ObjectMapper
 ) : DefaultProviderService {
 
+    @Throws(JsonRpcException::class)
     override fun getResponse(request: JsonRpcRequest): ProviderResponse {
         try {
             val responseEntity =
                 restTemplate.postForEntity<ProviderResponse>(applicationProperties.provider.blockchainApi, request)
-            return responseEntity.body!!
+            return responseEntity.body
+                ?: throw JsonRpcException(ErrorResponse(request, ErrorCode.INTERNAL_ERROR))
         } catch (ex: HttpClientErrorException) {
             val errorResponse = objectMapper.readValue<ErrorResponse>(ex.responseBodyAsString)
             throw JsonRpcException(errorResponse)
         } catch (ex: RestClientException) {
-            // TODO map out the json rpc exceptions
-            throw ex
+            throw JsonRpcException(ErrorResponse(request, ErrorCode.INTERNAL_ERROR))
         }
     }
 }
