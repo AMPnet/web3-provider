@@ -15,15 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.restdocs.RestDocumentationContextProvider
-import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.web.context.WebApplicationContext
 import org.web3j.protocol.core.DefaultBlockParameterName
 import org.web3j.utils.Numeric
 import java.math.BigInteger
 
-@ExtendWith(value = [SpringExtension::class, RestDocumentationExtension::class])
+@ExtendWith(SpringExtension::class)
 @SpringBootTest
 class AccountInformationServiceTest : TestBase() {
 
@@ -47,7 +44,7 @@ class AccountInformationServiceTest : TestBase() {
     }
 
     @BeforeEach
-    fun init(wac: WebApplicationContext, restDocumentation: RestDocumentationContextProvider) {
+    fun init() {
         testContext = TestContext()
     }
 

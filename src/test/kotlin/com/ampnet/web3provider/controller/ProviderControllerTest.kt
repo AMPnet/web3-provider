@@ -79,10 +79,10 @@ class ProviderControllerTest : TestBase() {
             val json =
                 """
                     {
-                    "id":"1",
-                    "jsonrpc":"2.0",
-                    "method": "eth_getBalance",
-                    "params":["$address", "$blockParameter"]
+                        "id":"1",
+                        "jsonrpc":"2.0",
+                        "method": "eth_getBalance",
+                        "params":["$address", "$blockParameter"]
                     }
                 """.trimIndent()
             val result = mockMvc.perform(
@@ -90,6 +90,8 @@ class ProviderControllerTest : TestBase() {
             ).andExpect(status().isOk).andReturn()
             val response: ProviderResponse = objectMapper.readValue(result.response.contentAsString)
             assertThat(response.result).isEqualTo(balance)
+            assertThat(response.jsonrpc).isEqualTo(testContext.jsonRpcRequest.jsonrpc)
+            assertThat(response.id).isEqualTo(testContext.jsonRpcRequest.id)
         }
     }
 
@@ -107,10 +109,10 @@ class ProviderControllerTest : TestBase() {
             val json =
                 """
                     {
-                    "id":"1",
-                    "jsonrpc":"2.0",
-                    "method": "eth_getCode",
-                    "params":["$address", "$blockParameter"]
+                        "id":"1",
+                        "jsonrpc":"2.0",
+                        "method": "eth_getCode",
+                        "params":["$address", "$blockParameter"]
                     }
                 """.trimIndent()
             val result = mockMvc.perform(
@@ -118,6 +120,8 @@ class ProviderControllerTest : TestBase() {
             ).andExpect(status().isOk).andReturn()
             val response: ProviderResponse = objectMapper.readValue(result.response.contentAsString)
             assertThat(response.result).isEqualTo(code)
+            assertThat(response.jsonrpc).isEqualTo(testContext.jsonRpcRequest.jsonrpc)
+            assertThat(response.id).isEqualTo(testContext.jsonRpcRequest.id)
         }
     }
 
