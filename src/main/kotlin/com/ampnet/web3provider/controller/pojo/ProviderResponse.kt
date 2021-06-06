@@ -5,7 +5,7 @@ data class ProviderResponse(
     val id: Any?,
     val result: Any?
 ) {
-    constructor(request: JsonRpcRequest, result: String?) : this(
+    constructor(request: JsonRpcRequest, result: Any?) : this(
         request.jsonrpc,
         request.id,
         result
