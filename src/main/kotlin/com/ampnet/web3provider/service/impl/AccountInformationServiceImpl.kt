@@ -19,20 +19,20 @@ class AccountInformationServiceImpl(
     companion object : KLogging()
 
     override fun getBalance(request: JsonRpcRequest): ProviderResponse {
-        if (request.params.isEmpty()) return defaultProviderService.getResponse(request)
-        val address = request.params[0]
+        val address = request.params.getOrNull(0)
         val blockParameter = request.params.getOrNull(1) ?: DefaultBlockParameterName.LATEST.value
         logger().info { "Received request to get ${request.method} for address: $address and block: $blockParameter" }
-        val hashKey = address.toString() + blockParameter
-        return redisRepository.getResponseFromCacheOrProvider(RedisEntity.BALANCE, hashKey, request)
+        val hashKey = address?.let { it.toString() + blockParameter }
+        redisRepository.getCache(RedisEntity.BALANCE.methodName, hashKey)?.let { return ProviderResponse(request, it) }
+        return defaultProviderService.getResponseAndUpdateCache(request, RedisEntity.BALANCE, hashKey)
     }
 
     override fun getCode(request: JsonRpcRequest): ProviderResponse {
-        if (request.params.isEmpty()) return defaultProviderService.getResponse(request)
-        val address = request.params[0]
+        val address = request.params.getOrNull(0)
         val blockParameter = request.params.getOrNull(1) ?: DefaultBlockParameterName.LATEST.value
         logger.info { "Received request to get ${request.method} for address: $address and block: $blockParameter" }
-        val hashKey = address.toString() + blockParameter
-        return redisRepository.getResponseFromCacheOrProvider(RedisEntity.CODE, hashKey, request)
+        val hashKey = address?.let { it.toString() + blockParameter }
+        redisRepository.getCache(RedisEntity.CODE.methodName, hashKey)?.let { return ProviderResponse(request, it) }
+        return defaultProviderService.getResponseAndUpdateCache(request, RedisEntity.CODE, hashKey)
     }
 }

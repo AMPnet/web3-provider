@@ -18,10 +18,12 @@ class TransactionServiceImpl(
     companion object : KLogging()
 
     override fun getTransactionByHash(request: JsonRpcRequest): ProviderResponse {
-        val txHash = request.params.getOrNull(0) ?: defaultProviderService.getResponse(request)
+        val txHash = request.params.getOrNull(0)
         logger().info { "Received request to get ${request.method} for txHash: $txHash" }
-        return redisRepository.getResponseFromCacheOrProvider(
-            RedisEntity.TRANSACTION_BY_HASH, txHash.toString(), request
+        redisRepository.getCache(RedisEntity.TRANSACTION_BY_HASH.methodName, txHash.toString())
+            ?.let { return ProviderResponse(request, it) }
+        return defaultProviderService.getResponseAndUpdateCache(
+            request, RedisEntity.TRANSACTION_BY_HASH, txHash.toString()
         )
     }
 }

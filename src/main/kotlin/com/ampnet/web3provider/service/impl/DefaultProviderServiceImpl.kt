@@ -3,9 +3,11 @@ package com.ampnet.web3provider.service.impl
 import com.ampnet.web3provider.config.ApplicationProperties
 import com.ampnet.web3provider.controller.pojo.JsonRpcRequest
 import com.ampnet.web3provider.controller.pojo.ProviderResponse
+import com.ampnet.web3provider.enums.RedisEntity
 import com.ampnet.web3provider.exception.ErrorCode
 import com.ampnet.web3provider.exception.ErrorResponse
 import com.ampnet.web3provider.exception.JsonRpcException
+import com.ampnet.web3provider.repository.RedisRepository
 import com.ampnet.web3provider.service.DefaultProviderService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -19,7 +21,8 @@ import org.springframework.web.client.postForEntity
 class DefaultProviderServiceImpl(
     private val restTemplate: RestTemplate,
     private val applicationProperties: ApplicationProperties,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val redisRepository: RedisRepository
 ) : DefaultProviderService {
 
     @Throws(JsonRpcException::class)
@@ -27,13 +30,23 @@ class DefaultProviderServiceImpl(
         try {
             val responseEntity =
                 restTemplate.postForEntity<ProviderResponse>(applicationProperties.provider.blockchainApi, request)
-            return responseEntity.body
-                ?: throw JsonRpcException(ErrorResponse(request, ErrorCode.INTERNAL_ERROR))
+            return responseEntity.body ?: throw JsonRpcException(ErrorResponse(request, ErrorCode.INTERNAL_ERROR))
         } catch (ex: HttpClientErrorException) {
             val errorResponse = objectMapper.readValue<ErrorResponse>(ex.responseBodyAsString)
             throw JsonRpcException(errorResponse)
         } catch (ex: RestClientException) {
             throw JsonRpcException(ErrorResponse(request, ErrorCode.INTERNAL_ERROR))
         }
+    }
+
+    @Throws(JsonRpcException::class)
+    override fun getResponseAndUpdateCache(
+        request: JsonRpcRequest,
+        redisEntity: RedisEntity,
+        hashKey: String?
+    ): ProviderResponse {
+        val response = getResponse(request)
+        response.result?.let { redisRepository.updateCache(redisEntity, hashKey, it) }
+        return response
     }
 }

@@ -1,12 +1,9 @@
 package com.ampnet.web3provider.service.pojo
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-
 /*
 Used for serialization/deserialization of object returned as a result from eth_getTransactionByHash
-@JsonTypeInfo needed in case retrieving it from RedisCache
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS) needed in case retrieving it from RedisCache
 */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 data class Transaction(
     val hash: String = "",
     val blockHash: String = "",

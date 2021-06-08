@@ -1,16 +1,15 @@
 package com.ampnet.web3provider.controller
 
 import com.ampnet.web3provider.TestBase
-import com.ampnet.web3provider.config.CacheCleanerService
+import com.ampnet.web3provider.config.ApplicationProperties
 import com.ampnet.web3provider.repository.RedisRepository
-import com.ampnet.web3provider.service.DefaultProviderService
 import com.ampnet.web3provider.service.pojo.Transaction
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
@@ -23,21 +22,21 @@ import org.springframework.web.context.WebApplicationContext
 
 @ExtendWith(value = [SpringExtension::class, RestDocumentationExtension::class])
 @SpringBootTest
-class ControllerTestBase : TestBase() {
+abstract class ControllerTestBase : TestBase() {
 
     @Autowired
     protected lateinit var objectMapper: ObjectMapper
 
     @Autowired
-    protected lateinit var cacheCleanerService: CacheCleanerService
-
-    @Autowired
     protected lateinit var redisRepository: RedisRepository
 
-    protected lateinit var mockMvc: MockMvc
+    @Autowired
+    protected lateinit var redisTemplate: RedisTemplate<String, String>
 
-    @MockBean
-    protected lateinit var defaultProviderService: DefaultProviderService
+    @Autowired
+    protected lateinit var applicationProperties: ApplicationProperties
+
+    protected lateinit var mockMvc: MockMvc
 
     @BeforeEach
     fun init(wac: WebApplicationContext, restDocumentation: RestDocumentationContextProvider) {
