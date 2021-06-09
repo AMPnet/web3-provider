@@ -19,33 +19,20 @@ class AccountInformationServiceImpl(
     companion object : KLogging()
 
     override fun getBalance(request: JsonRpcRequest): ProviderResponse {
-        if (request.params.isEmpty()) return defaultProviderService.getResponse(request)
-        val address = request.params[0]
+        val address = request.params.getOrNull(0)
         val blockParameter = request.params.getOrNull(1) ?: DefaultBlockParameterName.LATEST.value
-        logger().info { "Received request to get eth_getBalance for address: $address and block: $blockParameter" }
-        val hashKey = address.toString() + blockParameter
-        return getResponseFromCacheOrProvider(RedisEntity.BALANCE, hashKey, request)
+        logger.info { "Received request to get ${request.method} for address: $address and block: $blockParameter" }
+        val hashKey = address?.let { it.toString() + blockParameter }
+        redisRepository.getCache(RedisEntity.BALANCE.methodName, hashKey)?.let { return ProviderResponse(request, it) }
+        return defaultProviderService.getResponseAndUpdateCache(request, RedisEntity.BALANCE, hashKey)
     }
 
     override fun getCode(request: JsonRpcRequest): ProviderResponse {
-        if (request.params.isEmpty()) return defaultProviderService.getResponse(request)
-        val address = request.params[0]
+        val address = request.params.getOrNull(0)
         val blockParameter = request.params.getOrNull(1) ?: DefaultBlockParameterName.LATEST.value
-        logger.info { "Received request to get eth_getCode for address: $address and block: $blockParameter" }
-        val hashKey = address.toString() + blockParameter
-        return getResponseFromCacheOrProvider(RedisEntity.CODE, hashKey, request)
-    }
-
-    private fun getResponseFromCacheOrProvider(
-        entity: RedisEntity,
-        hashKey: String,
-        request: JsonRpcRequest
-    ): ProviderResponse {
-        redisRepository.getCache(entity.methodName, hashKey)?.let { return ProviderResponse(request, it) }
-        val providerResponse = defaultProviderService.getResponse(request)
-        if (providerResponse.result != null) {
-            redisRepository.updateCache(entity, hashKey, providerResponse.result.toString())
-        }
-        return providerResponse
+        logger.info { "Received request to get ${request.method} for address: $address and block: $blockParameter" }
+        val hashKey = address?.let { it.toString() + blockParameter }
+        redisRepository.getCache(RedisEntity.CODE.methodName, hashKey)?.let { return ProviderResponse(request, it) }
+        return defaultProviderService.getResponseAndUpdateCache(request, RedisEntity.CODE, hashKey)
     }
 }

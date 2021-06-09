@@ -34,3 +34,23 @@ which is either an integer or the string `latest`, `earliest` or `pending`.
 include::{snippets}/ProviderControllerTest/mustBeAbleToGetCode/http-request.adoc[]
 .Response
 include::{snippets}/ProviderControllerTest/mustBeAbleToGetCode/http-response.adoc[]
+
+=== Chain Information API
+
+==== Get Chain Id
+Has no `params` and returns the currently configured chain ID.
+
+.Request
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetChainId/http-request.adoc[]
+.Response
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetChainId/http-response.adoc[]
+
+=== Transaction API
+
+==== Get Transaction By Hash
+`params` has one required field: `transaction hash`.
+
+.Request
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetTransactionByHash/http-request.adoc[]
+.Response
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetTransactionByHash/http-response.adoc[]
