@@ -2,8 +2,8 @@ package com.ampnet.web3provider.controller
 
 import com.ampnet.web3provider.controller.pojo.JsonRpcRequest
 import com.ampnet.web3provider.controller.pojo.ProviderResponse
+import com.ampnet.web3provider.controller.pojo.Transaction
 import com.ampnet.web3provider.enums.RedisEntity
-import com.ampnet.web3provider.service.pojo.Transaction
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -180,17 +180,6 @@ class ProviderControllerTest : ControllerTestBase() {
             .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
             .andExpect(MockRestRequestMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andRespond(MockRestResponseCreators.withSuccess(response, MediaType.APPLICATION_JSON))
-    }
-
-    private fun generateProviderResponse(request: JsonRpcRequest, result: Any): String {
-        return """
-            {
-                "id":"${request.id}",
-                "jsonrpc":"${request.jsonrpc}",
-                "method": "${request.method}",
-                "result": "$result"
-            }
-        """.trimIndent()
     }
 
     private class TestContext {

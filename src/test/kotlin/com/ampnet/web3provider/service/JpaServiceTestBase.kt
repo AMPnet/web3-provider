@@ -2,7 +2,6 @@ package com.ampnet.web3provider.service
 
 import com.ampnet.web3provider.TestBase
 import com.ampnet.web3provider.config.ApplicationProperties
-import com.ampnet.web3provider.controller.pojo.JsonRpcRequest
 import com.ampnet.web3provider.repository.RedisRepository
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.extension.ExtendWith
@@ -59,16 +58,5 @@ abstract class JpaServiceTestBase : TestBase() {
             .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
             .andExpect(MockRestRequestMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andRespond(response)
-    }
-
-    protected fun generateProviderResponse(request: JsonRpcRequest, result: Any): String {
-        return """
-            {
-                "id":"${request.id}",
-                "jsonrpc":"${request.jsonrpc}",
-                "method": "${request.method}",
-                "result": "$result"
-            }
-        """.trimIndent()
     }
 }

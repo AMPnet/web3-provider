@@ -21,7 +21,7 @@ class AccountInformationServiceImpl(
     override fun getBalance(request: JsonRpcRequest): ProviderResponse {
         val address = request.params.getOrNull(0)
         val blockParameter = request.params.getOrNull(1) ?: DefaultBlockParameterName.LATEST.value
-        logger().info { "Received request to get ${request.method} for address: $address and block: $blockParameter" }
+        logger.info { "Received request to get ${request.method} for address: $address and block: $blockParameter" }
         val hashKey = address?.let { it.toString() + blockParameter }
         redisRepository.getCache(RedisEntity.BALANCE.methodName, hashKey)?.let { return ProviderResponse(request, it) }
         return defaultProviderService.getResponseAndUpdateCache(request, RedisEntity.BALANCE, hashKey)

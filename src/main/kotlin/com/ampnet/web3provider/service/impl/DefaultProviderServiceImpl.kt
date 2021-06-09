@@ -11,6 +11,7 @@ import com.ampnet.web3provider.repository.RedisRepository
 import com.ampnet.web3provider.service.DefaultProviderService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import mu.KLogging
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClientException
@@ -24,6 +25,8 @@ class DefaultProviderServiceImpl(
     private val objectMapper: ObjectMapper,
     private val redisRepository: RedisRepository
 ) : DefaultProviderService {
+
+    companion object : KLogging()
 
     @Throws(JsonRpcException::class)
     override fun getResponse(request: JsonRpcRequest): ProviderResponse {
@@ -46,7 +49,13 @@ class DefaultProviderServiceImpl(
         hashKey: String?
     ): ProviderResponse {
         val response = getResponse(request)
-        response.result?.let { redisRepository.updateCache(redisEntity, hashKey, it) }
+        val result = response.result
+        logger.info {
+            "Received response $response from web3 provider and request to update cache with " +
+                "result: $result for entity: ${redisEntity.methodName} and hashKey: $hashKey." +
+                if (result != null && hashKey != null) "Updating cache with $result." else "Not updating cache."
+        }
+        result?.let { redisRepository.updateCache(redisEntity, hashKey, it) }
         return response
     }
 }

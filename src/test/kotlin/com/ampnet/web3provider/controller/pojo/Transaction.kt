@@ -1,4 +1,4 @@
-package com.ampnet.web3provider.service.pojo
+package com.ampnet.web3provider.controller.pojo
 
 /*
 Used for serialization/deserialization of object returned as a result from eth_getTransactionByHash

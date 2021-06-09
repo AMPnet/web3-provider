@@ -2,8 +2,8 @@ package com.ampnet.web3provider.controller
 
 import com.ampnet.web3provider.TestBase
 import com.ampnet.web3provider.config.ApplicationProperties
+import com.ampnet.web3provider.controller.pojo.Transaction
 import com.ampnet.web3provider.repository.RedisRepository
-import com.ampnet.web3provider.service.pojo.Transaction
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
