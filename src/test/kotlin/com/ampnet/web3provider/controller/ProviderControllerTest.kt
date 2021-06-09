@@ -137,8 +137,8 @@ class ProviderControllerTest : ControllerTestBase() {
             testContext.jsonRpcRequestJson = objectMapper.writeValueAsString(testContext.jsonRpcRequest)
             val response = """
             {
-                "id":"${testContext.jsonRpcRequest.id}",
-                "jsonrpc":"${testContext.jsonRpcRequest.jsonrpc}",
+                "id": "${testContext.jsonRpcRequest.id}",
+                "jsonrpc": "${testContext.jsonRpcRequest.jsonrpc}",
                 "method": "${testContext.jsonRpcRequest.method}",
                 "result": ${objectMapper.writeValueAsString(testContext.transaction)}
             }

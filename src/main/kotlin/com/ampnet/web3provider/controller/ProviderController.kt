@@ -26,7 +26,7 @@ class ProviderController(
 
     @PostMapping("/api", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun provider(@RequestBody request: JsonRpcRequest): ResponseEntity<ProviderResponse> {
-        logger().debug { "Received request for: ${request.method}" }
+        logger.debug { "Received request for: ${request.method}" }
         val response = when (request.method) {
             RedisEntity.BALANCE.methodName -> accountInformationService.getBalance(request)
             RedisEntity.CODE.methodName -> accountInformationService.getCode(request)

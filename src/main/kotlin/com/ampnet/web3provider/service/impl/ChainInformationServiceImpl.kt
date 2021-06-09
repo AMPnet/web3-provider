@@ -18,7 +18,7 @@ class ChainInformationServiceImpl(
     companion object : KLogging()
 
     override fun getChainId(request: JsonRpcRequest): ProviderResponse {
-        logger().info { "Received request to get ${request.method}" }
+        logger.info { "Received request to get ${request.method}" }
         redisRepository.getCache(RedisEntity.CHAIN_ID.methodName, request.method)?.let {
             return ProviderResponse(request, it)
         }

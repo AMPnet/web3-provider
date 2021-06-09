@@ -17,8 +17,8 @@ abstract class TestBase {
     protected fun generateProviderResponse(request: JsonRpcRequest, result: Any): String {
         return """
             {
-                "id":"${request.id}",
-                "jsonrpc":"${request.jsonrpc}",
+                "id": "${request.id}",
+                "jsonrpc": "${request.jsonrpc}",
                 "method": "${request.method}",
                 "result": "$result"
             }

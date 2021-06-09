@@ -19,7 +19,7 @@ class TransactionServiceImpl(
 
     override fun getTransactionByHash(request: JsonRpcRequest): ProviderResponse {
         val txHash = request.params.getOrNull(0)
-        logger().info { "Received request to get ${request.method} for txHash: $txHash" }
+        logger.info { "Received request to get ${request.method} for txHash: $txHash" }
         redisRepository.getCache(RedisEntity.TRANSACTION_BY_HASH.methodName, txHash.toString())
             ?.let { return ProviderResponse(request, it) }
         return defaultProviderService.getResponseAndUpdateCache(
