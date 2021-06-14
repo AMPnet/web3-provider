@@ -29,6 +29,10 @@ class ProviderControllerTest : ControllerTestBase() {
     private val blockParameter = DefaultBlockParameterName.LATEST.value
     private val hexValue = Numeric.encodeQuantity(BigInteger.TEN)
     private val txHash = "0x88df016429689c079f3b2f6ad39fa052532c56795b733da78a91ebe6a713944b"
+    private val balance by lazy { RedisEntity.Balance(applicationProperties) }
+    private val code by lazy { RedisEntity.Code(applicationProperties) }
+    private val chainId by lazy { RedisEntity.ChainId(applicationProperties) }
+    private val transactionByHash by lazy { RedisEntity.TransactionByHash(applicationProperties) }
 
     private lateinit var testContext: TestContext
     private lateinit var mockServer: MockRestServiceServer
@@ -39,14 +43,14 @@ class ProviderControllerTest : ControllerTestBase() {
     @BeforeEach
     fun init() {
         testContext = TestContext()
-        RedisEntity.values().forEach { redisTemplate.delete(it.methodName) }
+        jedis.flushAll()
     }
 
     @Test
     fun mustBeAbleToGetUserAccountBalance() {
         suppose("Default provider service will return balance") {
             testContext.jsonRpcRequest = JsonRpcRequest(
-                "2.0", RedisEntity.BALANCE.methodName, listOf(address, blockParameter), "1"
+                "2.0", balance.methodName, listOf(address, blockParameter), "1"
             )
             testContext.jsonRpcRequestJson = objectMapper.writeValueAsString(testContext.jsonRpcRequest)
             mockDefaultProviderResponse(
@@ -65,7 +69,7 @@ class ProviderControllerTest : ControllerTestBase() {
             assertThat(response.id).isEqualTo(testContext.jsonRpcRequest.id)
         }
         verify("Balance is saved inside the cache") {
-            val balance = redisRepository.getCache(RedisEntity.BALANCE.methodName, address + blockParameter)
+            val balance = redisRepository.getCache(balance.methodName, address + blockParameter)
             assertThat(balance).isEqualTo(hexValue)
         }
         verify("Rest template called mocked server") { mockServer.verify() }
@@ -75,7 +79,7 @@ class ProviderControllerTest : ControllerTestBase() {
     fun mustBeAbleToGetCode() {
         suppose("Default provider service will return code") {
             testContext.jsonRpcRequest = JsonRpcRequest(
-                "2.0", RedisEntity.CODE.methodName, listOf(address, blockParameter), "1"
+                "2.0", code.methodName, listOf(address, blockParameter), "1"
             )
             testContext.jsonRpcRequestJson = objectMapper.writeValueAsString(testContext.jsonRpcRequest)
             mockDefaultProviderResponse(
@@ -93,7 +97,7 @@ class ProviderControllerTest : ControllerTestBase() {
             assertThat(response.id).isEqualTo(testContext.jsonRpcRequest.id)
         }
         verify("Code is saved inside the cache") {
-            val code = redisRepository.getCache(RedisEntity.CODE.methodName, address + blockParameter)
+            val code = redisRepository.getCache(code.methodName, address + blockParameter)
             assertThat(code).isEqualTo(hexValue)
         }
         verify("Rest template called mocked server") { mockServer.verify() }
@@ -103,7 +107,7 @@ class ProviderControllerTest : ControllerTestBase() {
     fun mustBeAbleToGetChainId() {
         suppose("Default provider service will return chainId") {
             testContext.jsonRpcRequest = JsonRpcRequest(
-                "2.0", RedisEntity.CHAIN_ID.methodName, listOf(), "1"
+                "2.0", chainId.methodName, listOf(), "1"
             )
             testContext.jsonRpcRequestJson = objectMapper.writeValueAsString(testContext.jsonRpcRequest)
             mockDefaultProviderResponse(
@@ -121,7 +125,7 @@ class ProviderControllerTest : ControllerTestBase() {
             assertThat(response.id).isEqualTo(testContext.jsonRpcRequest.id)
         }
         verify("Chain id is saved inside the cache") {
-            val chainId = redisRepository.getCache(RedisEntity.CHAIN_ID.methodName, RedisEntity.CHAIN_ID.methodName)
+            val chainId = redisRepository.getCache(chainId.methodName, chainId.methodName)
             assertThat(chainId).isEqualTo(hexValue)
         }
         verify("Rest template called mocked server") { mockServer.verify() }
@@ -132,7 +136,7 @@ class ProviderControllerTest : ControllerTestBase() {
         suppose("Default provider service will return transaction result") {
             testContext.transaction = createTransaction()
             testContext.jsonRpcRequest = JsonRpcRequest(
-                "2.0", RedisEntity.TRANSACTION_BY_HASH.methodName, listOf(txHash), "1"
+                "2.0", transactionByHash.methodName, listOf(txHash), "1"
             )
             testContext.jsonRpcRequestJson = objectMapper.writeValueAsString(testContext.jsonRpcRequest)
             val response = """
@@ -160,9 +164,9 @@ class ProviderControllerTest : ControllerTestBase() {
             assertThat(response.id).isEqualTo(testContext.jsonRpcRequest.id)
         }
         verify("Transaction is saved inside the cache") {
-            val transaction = redisRepository.getCache(RedisEntity.TRANSACTION_BY_HASH.methodName, txHash)
+            val transaction = redisRepository.getCache(transactionByHash.methodName, txHash)
             assertThat(Transaction.from(transaction as Map<String, String>)).isEqualTo(testContext.transaction)
-            redisTemplate.delete(RedisEntity.TRANSACTION_BY_HASH.methodName)
+            redisTemplate.delete(transactionByHash.methodName)
         }
         verify("Rest template called mocked server") { mockServer.verify() }
     }

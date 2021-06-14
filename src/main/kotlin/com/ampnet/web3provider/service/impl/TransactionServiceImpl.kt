@@ -1,5 +1,6 @@
 package com.ampnet.web3provider.service.impl
 
+import com.ampnet.web3provider.config.ApplicationProperties
 import com.ampnet.web3provider.controller.pojo.JsonRpcRequest
 import com.ampnet.web3provider.controller.pojo.ProviderResponse
 import com.ampnet.web3provider.enums.RedisEntity
@@ -12,7 +13,8 @@ import org.springframework.stereotype.Service
 @Service
 class TransactionServiceImpl(
     private val redisRepository: RedisRepository,
-    private val defaultProviderService: DefaultProviderService
+    private val defaultProviderService: DefaultProviderService,
+    private val applicationProperties: ApplicationProperties
 ) : TransactionService {
 
     companion object : KLogging()
@@ -20,10 +22,11 @@ class TransactionServiceImpl(
     override fun getTransactionByHash(request: JsonRpcRequest): ProviderResponse {
         val txHash = request.params.getOrNull(0)
         logger.info { "Received request to get ${request.method} for txHash: $txHash" }
-        redisRepository.getCache(RedisEntity.TRANSACTION_BY_HASH.methodName, txHash.toString())
+        val transactionByHash = RedisEntity.TransactionByHash(applicationProperties)
+        redisRepository.getCache(transactionByHash.methodName, txHash.toString())
             ?.let { return ProviderResponse(request, it) }
         return defaultProviderService.getResponseAndUpdateCache(
-            request, RedisEntity.TRANSACTION_BY_HASH, txHash.toString()
+            request, transactionByHash, txHash.toString()
         )
     }
 }

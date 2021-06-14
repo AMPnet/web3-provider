@@ -1,5 +1,6 @@
 package com.ampnet.web3provider.controller
 
+import com.ampnet.web3provider.config.ApplicationProperties
 import com.ampnet.web3provider.controller.pojo.JsonRpcRequest
 import com.ampnet.web3provider.controller.pojo.ProviderResponse
 import com.ampnet.web3provider.enums.RedisEntity
@@ -19,7 +20,8 @@ class ProviderController(
     private val accountInformationService: AccountInformationService,
     private val chainInformationService: ChainInformationService,
     private val transactionService: TransactionService,
-    private val defaultProviderService: DefaultProviderService
+    private val defaultProviderService: DefaultProviderService,
+    private val applicationProperties: ApplicationProperties
 ) {
 
     companion object : KLogging()
@@ -28,10 +30,11 @@ class ProviderController(
     fun provider(@RequestBody request: JsonRpcRequest): ResponseEntity<ProviderResponse> {
         logger.debug { "Received request for: ${request.method}" }
         val response = when (request.method) {
-            RedisEntity.BALANCE.methodName -> accountInformationService.getBalance(request)
-            RedisEntity.CODE.methodName -> accountInformationService.getCode(request)
-            RedisEntity.CHAIN_ID.methodName -> chainInformationService.getChainId(request)
-            RedisEntity.TRANSACTION_BY_HASH.methodName -> transactionService.getTransactionByHash(request)
+            RedisEntity.Balance(applicationProperties).methodName -> accountInformationService.getBalance(request)
+            RedisEntity.Code(applicationProperties).methodName -> accountInformationService.getCode(request)
+            RedisEntity.ChainId(applicationProperties).methodName -> chainInformationService.getChainId(request)
+            RedisEntity.TransactionByHash(applicationProperties).methodName ->
+                transactionService.getTransactionByHash(request)
             else -> defaultProviderService.getResponse(request)
         }
         return ResponseEntity.ok(response)
