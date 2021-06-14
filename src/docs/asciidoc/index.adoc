@@ -12,15 +12,45 @@ Version {version}, {date}
 This document contains generated documentation for `AMPnet web3 provider`.
 
 == Public API
-Collection of public endpoints
+Collection of public endpoints. If the rpc method is not defined goes to the default provider.
+See the list of all the available methods at: `https://eth.wiki/json-rpc/API`
 
-=== Provider API
+=== Account Information API
 
 ==== Get balance
 `params` has two required fields: `address` to check for balance and `block number`
 which is either an integer or the string `latest`, `earliest` or `pending`.
 
 .Request
-include::{snippets}/ProviderServiceTest/mustBeAbleToGetUserAccountBalance/http-request.adoc[]
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetUserAccountBalance/http-request.adoc[]
 .Response
-include::{snippets}/ProviderServiceTest/mustBeAbleToGetUserAccountBalance/http-response.adoc[]
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetUserAccountBalance/http-response.adoc[]
+
+==== Get Code
+`params` has two required fields: `address` to check for balance and `block number`
+which is either an integer or the string `latest`, `earliest` or `pending`.
+
+.Request
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetCode/http-request.adoc[]
+.Response
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetCode/http-response.adoc[]
+
+=== Chain Information API
+
+==== Get Chain Id
+Has no `params` and returns the currently configured chain ID.
+
+.Request
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetChainId/http-request.adoc[]
+.Response
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetChainId/http-response.adoc[]
+
+=== Transaction API
+
+==== Get Transaction By Hash
+`params` has one required field: `transaction hash`.
+
+.Request
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetTransactionByHash/http-request.adoc[]
+.Response
+include::{snippets}/ProviderControllerTest/mustBeAbleToGetTransactionByHash/http-response.adoc[]

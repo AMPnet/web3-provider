@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
 
 @Configuration
@@ -20,11 +21,17 @@ class RedisConfig {
     }
 
     @Bean
-    fun redisTemplate(): RedisTemplate<String, String> {
-        val template = RedisTemplate<String, String>()
-        template.setConnectionFactory(jedisConnectionFactory())
-        template.keySerializer = StringRedisSerializer()
-        template.afterPropertiesSet()
-        return template
+    fun redisTemplate(): RedisTemplate<String, Any> {
+        val redisTemplate = RedisTemplate<String, Any>()
+        redisTemplate.apply {
+            this.setConnectionFactory(jedisConnectionFactory())
+            this.keySerializer = StringRedisSerializer()
+            this.valueSerializer = GenericJackson2JsonRedisSerializer()
+            this.hashKeySerializer = StringRedisSerializer()
+            this.hashValueSerializer = GenericJackson2JsonRedisSerializer()
+            this.setDefaultSerializer(GenericJackson2JsonRedisSerializer())
+            this.afterPropertiesSet()
+        }
+        return redisTemplate
     }
 }
