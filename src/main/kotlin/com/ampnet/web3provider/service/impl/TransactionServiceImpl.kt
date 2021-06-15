@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 @Service
 class TransactionServiceImpl(
     private val redisRepository: RedisRepository,
-    private val defaultProviderService: DefaultProviderService
+    private val defaultProviderService: DefaultProviderService,
 ) : TransactionService {
 
     companion object : KLogging()

@@ -13,7 +13,7 @@ import org.web3j.protocol.core.DefaultBlockParameterName
 @Service
 class AccountInformationServiceImpl(
     private val redisRepository: RedisRepository,
-    private val defaultProviderService: DefaultProviderService
+    private val defaultProviderService: DefaultProviderService,
 ) : AccountInformationService {
 
     companion object : KLogging()

@@ -19,7 +19,7 @@ class ProviderController(
     private val accountInformationService: AccountInformationService,
     private val chainInformationService: ChainInformationService,
     private val transactionService: TransactionService,
-    private val defaultProviderService: DefaultProviderService
+    private val defaultProviderService: DefaultProviderService,
 ) {
 
     companion object : KLogging()

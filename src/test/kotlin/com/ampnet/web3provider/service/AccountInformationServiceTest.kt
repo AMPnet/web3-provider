@@ -45,11 +45,11 @@ class AccountInformationServiceTest : JpaServiceTestBase() {
             accountInformationService.getBalance(testContext.jsonRpcRequest)
             val cache = redisRepository.getCache(RedisEntity.BALANCE.methodName, address + blockParameter)
             val expiryTimeInSec = redisTemplate.getExpire(RedisEntity.BALANCE.methodName)
-            Thread.sleep(RedisEntity.BALANCE.ttlInSec * 1000)
+            Thread.sleep(applicationProperties.redis.ethGetBalanceTtl * 1000)
             val cacheAfter5sec = redisRepository.getCache(RedisEntity.BALANCE.methodName, address + blockParameter)
             assertThat(cache).isEqualTo(hexValue)
             assertThat(cacheAfter5sec).isNull()
-            assertThat(expiryTimeInSec).isEqualTo(RedisEntity.BALANCE.ttlInSec)
+            assertThat(expiryTimeInSec).isEqualTo(applicationProperties.redis.ethGetBalanceTtl)
         }
     }
 

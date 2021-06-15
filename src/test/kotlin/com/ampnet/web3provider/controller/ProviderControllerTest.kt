@@ -39,7 +39,7 @@ class ProviderControllerTest : ControllerTestBase() {
     @BeforeEach
     fun init() {
         testContext = TestContext()
-        RedisEntity.values().forEach { redisTemplate.delete(it.methodName) }
+        jedis.flushAll()
     }
 
     @Test
