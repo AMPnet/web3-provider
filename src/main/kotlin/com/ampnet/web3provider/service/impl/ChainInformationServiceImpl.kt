@@ -1,6 +1,5 @@
 package com.ampnet.web3provider.service.impl
 
-import com.ampnet.web3provider.config.ApplicationProperties
 import com.ampnet.web3provider.controller.pojo.JsonRpcRequest
 import com.ampnet.web3provider.controller.pojo.ProviderResponse
 import com.ampnet.web3provider.enums.RedisEntity
@@ -13,18 +12,16 @@ import org.springframework.stereotype.Service
 @Service
 class ChainInformationServiceImpl(
     private val redisRepository: RedisRepository,
-    private val defaultProviderService: DefaultProviderService,
-    private val applicationProperties: ApplicationProperties
+    private val defaultProviderService: DefaultProviderService
 ) : ChainInformationService {
 
     companion object : KLogging()
 
     override fun getChainId(request: JsonRpcRequest): ProviderResponse {
         logger.info { "Received request to get ${request.method}" }
-        val chainId = RedisEntity.ChainId(applicationProperties)
-        redisRepository.getCache(chainId.methodName, request.method)?.let {
+        redisRepository.getCache(RedisEntity.CHAIN_ID.methodName, request.method)?.let {
             return ProviderResponse(request, it)
         }
-        return defaultProviderService.getResponseAndUpdateCache(request, chainId, request.method)
+        return defaultProviderService.getResponseAndUpdateCache(request, RedisEntity.CHAIN_ID, request.method)
     }
 }

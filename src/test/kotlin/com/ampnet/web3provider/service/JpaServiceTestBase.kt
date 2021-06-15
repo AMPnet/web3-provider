@@ -2,7 +2,6 @@ package com.ampnet.web3provider.service
 
 import com.ampnet.web3provider.TestBase
 import com.ampnet.web3provider.config.ApplicationProperties
-import com.ampnet.web3provider.enums.RedisEntity
 import com.ampnet.web3provider.repository.RedisRepository
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.extension.ExtendWith
@@ -28,7 +27,6 @@ abstract class JpaServiceTestBase : TestBase() {
     protected val address = "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B"
     protected val blockParameter = DefaultBlockParameterName.LATEST.toString().toLowerCase()
     protected val hexValue: String = Numeric.encodeQuantity(BigInteger.TEN)
-    protected val balance by lazy { RedisEntity.Balance(applicationProperties) }
 
     @Autowired
     protected lateinit var redisTemplate: RedisTemplate<String, String>
