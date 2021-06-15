@@ -30,12 +30,11 @@ class RedisRepositoryImpl(
         hashOperations.delete(key, hashKey)
     }
 
-    private fun getTtlForRedisEntity(redisEntity: RedisEntity): Long {
-        return when (redisEntity) {
+    private fun getTtlForRedisEntity(redisEntity: RedisEntity): Long =
+        when (redisEntity) {
             RedisEntity.BALANCE -> applicationProperties.redis.ethGetBalanceTtl
             RedisEntity.CODE -> applicationProperties.redis.ethGetCodeTtl
             RedisEntity.CHAIN_ID -> applicationProperties.redis.ethChainIdTtl
             RedisEntity.TRANSACTION_BY_HASH -> applicationProperties.redis.ethGetTransactionByHashTtl
         }
-    }
 }
