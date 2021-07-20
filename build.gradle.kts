@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.text.SimpleDateFormat
+import java.util.Date
 
 plugins {
     val kotlinVersion = "1.4.32"
@@ -7,15 +9,16 @@ plugins {
 
     id("org.springframework.boot") version "2.4.5"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    id("org.asciidoctor.convert") version "1.5.8"
+    id("org.asciidoctor.jvm.convert") version "3.3.2"
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
     id("io.gitlab.arturbosch.detekt").version("1.16.0")
+    id("com.google.cloud.tools.jib") version "2.8.0"
     idea
     jacoco
 }
 
 group = "com.ampnet"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
@@ -25,14 +28,17 @@ repositories {
 }
 
 dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-web")
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    implementation("redis.clients:jedis:3.6.0")
+    implementation("io.micrometer:micrometer-registry-prometheus")
 
+    implementation("redis.clients:jedis:3.6.0")
     implementation("com.github.briandilley.jsonrpc4j:jsonrpc4j:1.6")
     implementation("org.web3j:core:4.8.4") {
         exclude(group = "com.squareup.okhttp3")
@@ -60,12 +66,38 @@ detekt {
     config = files("detekt-config.yml")
 }
 
+jib {
+    val dockerUsername: String = System.getenv("DOCKER_USERNAME") ?: "DOCKER_USERNAME"
+    val dockerPassword: String = System.getenv("DOCKER_PASSWORD") ?: "DOCKER_PASSWORD"
+    to {
+        image = "ampnet/web3-provider:$version"
+        auth {
+            username = dockerUsername
+            password = dockerPassword
+        }
+        tags = setOf("latest")
+    }
+    container {
+        creationTime = "USE_CURRENT_TIMESTAMP"
+    }
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+tasks.asciidoctor {
+    attributes(
+        mapOf(
+            "snippets" to file("build/generated-snippets"),
+            "version" to version,
+            "date" to SimpleDateFormat("yyyy-MM-dd").format(Date())
+        )
+    )
+    dependsOn(tasks.test)
+}
 tasks.register<Copy>("copyDocs") {
-    from(file("$buildDir/asciidoc/html5"))
+    from(file("$buildDir/docs/asciidoc"))
     into(file("src/main/resources/static/docs"))
     dependsOn(tasks.asciidoctor)
 }
