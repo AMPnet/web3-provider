@@ -30,6 +30,7 @@ class DefaultProviderServiceImpl(
 
     @Throws(JsonRpcException::class)
     override fun getResponse(request: JsonRpcRequest): ProviderResponse {
+        logger.debug { "Received request: $request" }
         try {
             val responseEntity =
                 restTemplate.postForEntity<ProviderResponse>(applicationProperties.provider.blockchainApi, request)
