@@ -154,6 +154,7 @@ class ProviderControllerTest : ControllerTestBase() {
                 post("/api").content(testContext.jsonRpcRequestJson).contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().isOk).andReturn()
             val response: ProviderResponse = objectMapper.readValue(result.response.contentAsString)
+            @Suppress("UNCHECKED_CAST")
             val transaction = Transaction.from(response.result as Map<String, String>)
             assertThat(transaction).isEqualTo(testContext.transaction)
             assertThat(response.jsonrpc).isEqualTo(testContext.jsonRpcRequest.jsonrpc)
@@ -161,6 +162,7 @@ class ProviderControllerTest : ControllerTestBase() {
         }
         verify("Transaction is saved inside the cache") {
             val transaction = redisRepository.getCache(RedisEntity.TRANSACTION_BY_HASH.methodName, txHash)
+            @Suppress("UNCHECKED_CAST")
             assertThat(Transaction.from(transaction as Map<String, String>)).isEqualTo(testContext.transaction)
             redisTemplate.delete(RedisEntity.TRANSACTION_BY_HASH.methodName)
         }

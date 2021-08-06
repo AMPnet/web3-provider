@@ -3,8 +3,7 @@ package com.ampnet.web3provider.config
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory
+import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
@@ -14,17 +13,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 class RedisConfig {
 
     @Bean
-    fun jedisConnectionFactory(): JedisConnectionFactory {
-        val connectionFactory = JedisConnectionFactory(RedisStandaloneConfiguration())
-        connectionFactory.afterPropertiesSet()
-        return connectionFactory
-    }
-
-    @Bean
-    fun redisTemplate(): RedisTemplate<String, Any> {
-        val redisTemplate = RedisTemplate<String, Any>()
-        redisTemplate.apply {
-            this.setConnectionFactory(jedisConnectionFactory())
+    fun redisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, Any> =
+        RedisTemplate<String, Any>().apply {
+            this.setConnectionFactory(connectionFactory)
             this.keySerializer = StringRedisSerializer()
             this.valueSerializer = GenericJackson2JsonRedisSerializer()
             this.hashKeySerializer = StringRedisSerializer()
@@ -32,6 +23,4 @@ class RedisConfig {
             this.setDefaultSerializer(GenericJackson2JsonRedisSerializer())
             this.afterPropertiesSet()
         }
-        return redisTemplate
-    }
 }
